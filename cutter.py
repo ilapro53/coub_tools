@@ -5,6 +5,7 @@ import moviepy
 from moviepy.editor import VideoFileClip
 import cv2
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+from moviepy.video.io import ffmpeg_tools
 
 def with_opencv(filename):
     import cv2
@@ -24,11 +25,12 @@ def with_moviepy(filename):
     duration       = clip.duration
     fps            = clip.fps
     width, height  = clip.size
-    return duration, fps, (width, height)
+    return (duration*100-8)/100, fps, (width, height)
 
 if __name__ == '__main__':
-    ID = '2otm76'
-    ln = with_moviepy(f'K:\\CoubData\\{ID}.mp4')[0]
-    ffmpeg_extract_subclip(f'K:\\Coubs\\ilya-pro\\{ID}.mp4', 0, round(ln-0.05), targetname='cut1.mp4')
-    ln2 = with_moviepy('cut1.mp4')[0]
-    print(ln, ln2)
+    # ID = '2otm76'
+    # ln = with_moviepy(f'K:\\CoubData\\{ID}.mp4')[0]
+    # ffmpeg_extract_subclip(f'K:\\Coubs\\ilya-pro\\{ID}.mp4', 0, round(ln-0.05), targetname='cut1.mp4')
+    # ln2 = with_moviepy('cut1.mp4')[0]
+    # print(ln, ln2)
+    print(with_moviepy(r'K:\Coubs\musecollexion\30gtsq (1).mp4'))

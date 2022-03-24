@@ -191,12 +191,33 @@ class CoubDataObject:
 # print(jsn['channel'])
 # print(jsn['communities'])
 # print(jsn['tags'])
+
+
+
 if __name__ == '__main__':
-    files = tuple(map(lambda a: a.replace('.mp4', '').replace('.mp3', ''), os.listdir(r'K:\Coubs\ilya-pro')))
+    print('\nВНИМАНИЕ!!! Данную программу не рекомендуется запускать из директории '
+          'на SSD диске т.к программа будет скачивать и удалять видео (в низком разрешении) '
+          'для определения длины видеоряда. Подобные записи могут сократить срок службы SSD '
+          'накопителя\n')
+
+    coubs_dir = input('Директория c сохраненными коубами: ')
+    save_dir = input('Директория для сохранения данных коубов: ')
+    # coubs_dir = r'K:\Coubs\musecollexion'
+    # save_dir = r'K:\CoubData\'
+
+    settings = json.dumps({
+        'coubs_dir': coubs_dir,
+        'save_dir': save_dir
+    })
+
+    with open('lsat_options.json', "w", encoding='utf-8') as f:
+        f.write(settings)
+
+
+    files = tuple(map(lambda a: a.replace('.mp4', '').replace('.mp3', ''), os.listdir(coubs_dir)))
     files_total_count = len(files)
     files_cur_count = 0
 
-    save_dir = 'K:\\CoubData\\'
 
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
@@ -213,7 +234,15 @@ if __name__ == '__main__':
 
         if not (audio_exists and time_exists and json_exists):
             print(f'[{files_cur_count}/{files_total_count}]', ID)
-            jsn = json.loads(requests.get(f'https://coub.com/api/v2/coubs/{ID}').text)
+
+            while True:
+                success = True
+                try:
+                    jsn = json.loads(requests.get(f'https://coub.com/api/v2/coubs/{ID}').text)
+                    break
+                except requests.ConnectionError:
+                    print('Connection error...')
+                    print('Retying...')
 
             if not audio_exists:
                 if 'higher' in jsn['file_versions']['html5']['audio']:
@@ -251,7 +280,7 @@ if __name__ == '__main__':
                     f.write(str(time))
 
                 shutil.move("time.txt", os.path.join(save_dir, ID, 'time.txt'))
-                print('Time added', with_moviepy("response.mp4")[0], time)
+                print('Time added', f'{time}s')
 
             if not json_exists:
                 json_object = json.dumps(jsn, indent=4)
